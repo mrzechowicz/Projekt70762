@@ -67,10 +67,10 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Orders.sql" />
-    <Build Include="dbo\Tables\Models.sql" />
     <Build Include="dbo\Tables\ModelPrice.sql" />
     <Build Include="dbo\Tables\Employee.sql" />
     <Build Include="dbo\Tables\Customer.sql" />
     <Build Include="dbo\Tables\Brand.sql" />
+    <Build Include="dbo\Tables\Model.sql" />
   </ItemGroup>
 </Project>
