@@ -7,6 +7,9 @@
     [Emp_Email]       VARCHAR (100) NULL,
     [Emp_InsertDate]  DATETIME      DEFAULT (getdate()) NOT NULL,
     [Emp_UpdateDate]  DATETIME      NULL,
-    CONSTRAINT [PK_EmpLogin] PRIMARY KEY CLUSTERED ([Emp_Login] ASC)
+    CONSTRAINT [PK_EmpId] PRIMARY KEY CLUSTERED ([Emp_Id] ASC),
+    CONSTRAINT [UQ_EmpLogin] UNIQUE NONCLUSTERED ([Emp_Login] ASC)
 );
+
+
 

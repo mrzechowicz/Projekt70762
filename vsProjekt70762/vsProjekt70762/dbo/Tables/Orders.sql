@@ -9,6 +9,9 @@
     [Ord_PlannedPickupDate] DATE         NULL,
     [Ord_IsCompleted]       BIT          DEFAULT ((0)) NOT NULL,
     [Ord_IsPaid]            BIT          NOT NULL,
-    CONSTRAINT [PK_OrdCode] PRIMARY KEY CLUSTERED ([Ord_Code] ASC)
+    CONSTRAINT [PK_OrdId] PRIMARY KEY CLUSTERED ([Ord_Id] ASC),
+    CONSTRAINT [UQ_OrdCode] UNIQUE NONCLUSTERED ([Ord_Code] ASC)
 );
+
+
 

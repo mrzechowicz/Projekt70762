@@ -8,6 +8,9 @@
     [Mpr_DateEnd]     DATE            NULL,
     [Mpr_InsertDate]  DATETIME        DEFAULT (getdate()) NOT NULL,
     [Mpr_UpdateDate]  DATETIME        NULL,
-    CONSTRAINT [PK_MprPriceNumber] PRIMARY KEY CLUSTERED ([MPr_PriceNumber] ASC)
+    CONSTRAINT [PK_MprId] PRIMARY KEY CLUSTERED ([MPr_Id] ASC),
+    CONSTRAINT [UQ_MprPriceNumber] UNIQUE NONCLUSTERED ([MPr_PriceNumber] ASC)
 );
+
+
 

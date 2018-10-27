@@ -9,6 +9,9 @@
     [Cus_Address]     VARCHAR (200) NULL,
     [Cus_InsertDate]  DATETIME      DEFAULT (getdate()) NOT NULL,
     [Cus_UpdateDate]  DATETIME      NULL,
-    CONSTRAINT [PK_CusCode] PRIMARY KEY CLUSTERED ([Cus_Code] ASC)
+    CONSTRAINT [PK_CusId] PRIMARY KEY CLUSTERED ([Cus_Id] ASC),
+    CONSTRAINT [UQ_CusCode] UNIQUE NONCLUSTERED ([Cus_Code] ASC)
 );
+
+
 

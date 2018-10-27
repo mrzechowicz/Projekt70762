@@ -10,6 +10,9 @@
     [Mod_AutomaticGearBox]   BIT             NULL,
     [Mod_InsertDate]         DATETIME        DEFAULT (getdate()) NOT NULL,
     [Mod_UpdateDate]         DATETIME        NULL,
-    CONSTRAINT [PK_ModCode] PRIMARY KEY CLUSTERED ([Mod_Code] ASC)
+    CONSTRAINT [PK_ModId] PRIMARY KEY CLUSTERED ([Mod_Id] ASC),
+    CONSTRAINT [UQ_ModCode] UNIQUE NONCLUSTERED ([Mod_Code] ASC)
 );
+
+
 
