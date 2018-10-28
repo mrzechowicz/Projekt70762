@@ -78,5 +78,9 @@
     <Build Include="dbo\Tables\CustomerSalary.sql" />
     <Build Include="dbo\Tables\CustomerPosition.sql" />
     <Build Include="dbo\Tables\CustomerPayout.sql" />
+    <Build Include="dbo\Tables\Services.sql" />
+    <Build Include="dbo\Tables\ServiceOrderStatus.sql" />
+    <Build Include="dbo\Tables\ServiceOrders.sql" />
+    <Build Include="dbo\Tables\ServiceHistory.sql" />
   </ItemGroup>
 </Project>
