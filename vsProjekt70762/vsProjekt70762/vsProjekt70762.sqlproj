@@ -72,5 +72,11 @@
     <Build Include="dbo\Tables\Customer.sql" />
     <Build Include="dbo\Tables\Brand.sql" />
     <Build Include="dbo\Tables\Model.sql" />
+    <Build Include="dbo\Tables\CustomerToTeam.sql" />
+    <Build Include="dbo\Tables\CustomerToPosition.sql" />
+    <Build Include="dbo\Tables\CustomerTeam.sql" />
+    <Build Include="dbo\Tables\CustomerSalary.sql" />
+    <Build Include="dbo\Tables\CustomerPosition.sql" />
+    <Build Include="dbo\Tables\CustomerPayout.sql" />
   </ItemGroup>
 </Project>
