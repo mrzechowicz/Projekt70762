@@ -13,12 +13,15 @@
     [Ord_InsertDate]        DATETIME        DEFAULT (getdate()) NOT NULL,
     [Ord_UpdateDate]        DATETIME        NULL,
     CONSTRAINT [PK_OrdId] PRIMARY KEY CLUSTERED ([Ord_Id] ASC),
+    CONSTRAINT [DF_OrdSellPrice] CHECK ([Ord_SellPrice]>(0)),
     CONSTRAINT [FK_CusId] FOREIGN KEY ([Ord_CusId]) REFERENCES [dbo].[Customer] ([Cus_Id]) ON DELETE SET DEFAULT,
     CONSTRAINT [FK_EmpId] FOREIGN KEY ([Ord_EmpId]) REFERENCES [dbo].[Employee] ([Emp_Id]) ON DELETE SET DEFAULT,
     CONSTRAINT [FK_ModId] FOREIGN KEY ([Ord_ModId]) REFERENCES [dbo].[Model] ([Mod_Id]) ON DELETE SET DEFAULT,
     CONSTRAINT [FK_MPrId] FOREIGN KEY ([Ord_MprId]) REFERENCES [dbo].[ModelPrice] ([MPr_Id]) ON DELETE SET DEFAULT,
     CONSTRAINT [UQ_OrdCode] UNIQUE NONCLUSTERED ([Ord_Code] ASC)
 );
+
+
 
 
 
