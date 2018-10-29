@@ -73,16 +73,16 @@
     <Build Include="dbo\Tables\Customer.sql" />
     <Build Include="dbo\Tables\Brand.sql" />
     <Build Include="dbo\Tables\Model.sql" />
-    <Build Include="dbo\Tables\CustomerToTeam.sql" />
-    <Build Include="dbo\Tables\CustomerToPosition.sql" />
-    <Build Include="dbo\Tables\CustomerTeam.sql" />
-    <Build Include="dbo\Tables\CustomerSalary.sql" />
-    <Build Include="dbo\Tables\CustomerPosition.sql" />
-    <Build Include="dbo\Tables\CustomerPayout.sql" />
     <Build Include="dbo\Tables\Services.sql" />
     <Build Include="dbo\Tables\ServiceOrderStatus.sql" />
     <Build Include="dbo\Tables\ServiceOrders.sql" />
     <Build Include="dbo\Tables\ServiceHistory.sql" />
     <Build Include="Security\rapOp.sql" />
+    <Build Include="dbo\Tables\EmployeeToTeam.sql" />
+    <Build Include="dbo\Tables\EmployeeToPosition.sql" />
+    <Build Include="dbo\Tables\EmployeeTeam.sql" />
+    <Build Include="dbo\Tables\EmployeeSalary.sql" />
+    <Build Include="dbo\Tables\EmployeePosition.sql" />
+    <Build Include="dbo\Tables\EmployeePayout.sql" />
   </ItemGroup>
 </Project>

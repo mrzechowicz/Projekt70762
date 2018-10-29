@@ -1,7 +1,0 @@
-﻿CREATE TABLE [dbo].[CustomerToTeam] (
-    [CTT_Id]    INT IDENTITY (1, 1) NOT NULL,
-    [CTT_CusId] INT NOT NULL,
-    [CTT_Cutd]  INT NOT NULL,
-    CONSTRAINT [PK_CTTId] PRIMARY KEY CLUSTERED ([CTT_Id] ASC)
-);
-

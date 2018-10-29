@@ -1,0 +1,7 @@
+﻿CREATE TABLE [dbo].[EmployeeToTeam] (
+    [ETT_Id]    INT IDENTITY (1, 1) NOT NULL,
+    [ETT_EmpId] INT NOT NULL,
+    [ETT_ETeId] INT NOT NULL,
+    CONSTRAINT [PK_ETTId] PRIMARY KEY CLUSTERED ([ETT_Id] ASC)
+);
+
