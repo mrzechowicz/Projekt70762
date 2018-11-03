@@ -65,6 +65,8 @@
     <Folder Include="dbo\Views\" />
     <Folder Include="dbo\Functions\" />
     <Folder Include="dbo\Stored Procedures\" />
+    <Folder Include="rapOp\" />
+    <Folder Include="rapOp\Views\" />
   </ItemGroup>
   <ItemGroup>
     <PreDeploy Include="PreDeployment\Projekt70762_01_założenie_bazy_danych.sql" />
@@ -90,5 +92,11 @@
     <Build Include="dbo\Views\vRandomSalesMan.sql" />
     <Build Include="dbo\Functions\RandomTeamMember.sql" />
     <Build Include="dbo\Stored Procedures\AddRandomCarOrders.sql" />
+    <Build Include="rapOp\Views\vBrandOrders.sql" />
+    <Build Include="dbo\Views\vRandomCustomer.sql" />
+    <Build Include="dbo\Functions\RandomCustomer.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="PostDeployment\Script.PostDeployment_Inserts.sql" />
   </ItemGroup>
 </Project>
