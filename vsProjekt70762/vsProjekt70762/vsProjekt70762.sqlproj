@@ -101,6 +101,9 @@
     <Build Include="rapOp\Views\vEmployeeOrdersList.sql" />
     <Build Include="rapOp\Views\vCarsNotOrdered.sql" />
     <Build Include="dbo\Stored Procedures\RandomServiceOrders.sql" />
+    <Build Include="rapOp\Views\vHRYearlySalesManRatio.sql" />
+    <Build Include="rapOp\Views\vHRYearlyPayoutByTeam.sql" />
+    <Build Include="rapOp\Views\vHRStaffGoingRetire.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="PostDeployment\Script.PostDeployment_Inserts.sql" />
