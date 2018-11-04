@@ -69,9 +69,6 @@
     <Folder Include="rapOp\Views\" />
   </ItemGroup>
   <ItemGroup>
-    <PreDeploy Include="PreDeployment\Projekt70762_01_założenie_bazy_danych.sql" />
-  </ItemGroup>
-  <ItemGroup>
     <Build Include="dbo\Tables\Orders.sql" />
     <Build Include="dbo\Tables\ModelPrice.sql" />
     <Build Include="dbo\Tables\Employee.sql" />
@@ -104,6 +101,7 @@
     <Build Include="rapOp\Views\vHRYearlySalesManRatio.sql" />
     <Build Include="rapOp\Views\vHRYearlyPayoutByTeam.sql" />
     <Build Include="rapOp\Views\vHRStaffGoingRetire.sql" />
+    <Build Include="rapOp\Views\vOrderDiscounts.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="PostDeployment\Script.PostDeployment_Inserts.sql" />

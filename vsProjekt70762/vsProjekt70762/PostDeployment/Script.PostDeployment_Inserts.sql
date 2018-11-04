@@ -78,6 +78,7 @@ SELECT 'SUZUKI', 'Suzuki', 'Japan'	UNION ALL
 SELECT 'TOYOTA', 'Toyota', 'Japan'	UNION ALL
 SELECT 'VW', 'Volkswagen', 'Germany'	UNION ALL
 SELECT 'VOLVO', 'Volvo', 'Sweden'
+GO
 
 --select top 1 * from Model
 INSERT INTO [dbo].[Model] (Mod_Code, Mod_Name, Mod_BraId, Mod_VehicleType,
@@ -195,7 +196,8 @@ SELECT 'VW', 'VWPOLO7COB16M', 'VOLKSWAGEN Polo VII 1.6 benzin manual', 'HATCHBAC
 Mod_EngineType, ModEngineDisplacement, Mod_EngineHorsePower,
 Mod_NumberOfDoors, Mod_AutomaticGearBox)
 		INNER JOIN Brand AS B  ON M.xMod_BraCode=B.Bra_Code
-
+GO
+		
 --truncate table [dbo].[EmployeePosition]
 --EmployePosition
 INSERT INTO [dbo].[EmployeePosition]
@@ -211,6 +213,7 @@ SELECT 'Key Account Manager' UNION ALL
 SELECT 'Sales assistant' UNION ALL
 SELECT 'Mechanic' UNION ALL
 SELECT 'IT Support'   ) as P(PositionName)
+GO
 
 --EmployeeTeam
 INSERT INTO [dbo].[EmployeeTeam]
@@ -222,6 +225,7 @@ SELECT 'Sales'		UNION ALL
 SELECT 'IT'			UNION ALL
 SELECT 'Car Repair'
 ) AS T(TeamName)
+GO
 
 --Employee
 INSERT INTO [dbo].[Employee]
@@ -239,7 +243,7 @@ LEFT(LastName,1)+FirstName
   FROM [AdventureWorks2016CTP3].[Person].[Person]
   ORDER BY NEWID()) AS P(Emp_Login, Emp_FirstName, Emp_LastName,
 Emp_TelephoneNo, Emp_Email, Emp_PESEL)
-
+GO
 
 
 --Customer
@@ -271,11 +275,11 @@ Cus_Email, Cus_City, Cus_Address, Cus_IDCardNumber)
   SELECT 'C'+FORMAT(ROW_NUMBER() OVER (ORDER BY Cus_Code), '000000000') as Cus_Code,
   Cus_FirstName, Cus_LastName, Cus_TelephoneNo,
 Cus_Email, Cus_City, Cus_Address, Cus_IDCardNumber FROM CTE
-
+GO
 
 --EmployeeToPosition
 --TRUNCATE TABLE EmployeeToPosition
-WITH CTEEmp AS 
+;WITH CTEEmp AS 
 (Select Row_Number() OVER (ORDER BY Emp_Id) as Number, Emp_Id From Employee)
 
 INSERT INTO [dbo].[EmployeeToPosition] (ETP_EmpId, ETP_EPoId, ETP_DateFrom, ETP_DateTo)
@@ -292,6 +296,7 @@ SELECT 'Sales assistant',		Emp_Id			, '2008-01-01', '9999-12-31'	FROM CTEEmp WHE
 SELECT 'Mechanic',				Emp_Id			, '2008-01-01', '9999-12-31'	FROM CTEEmp WHERE Number>=16 and Number<=19 UNION ALL
 SELECT 'IT Support',			Emp_Id			, '2008-01-01', '9999-12-31'	FROM CTEEmp WHERE Number>=20 and Number<=20 
 ) as E JOIN [dbo].[EmployeePosition] P ON E.PositionName=P.EPo_PositionName
+GO
 
 --select * from EmployeeToPosition
 
@@ -317,7 +322,7 @@ JOIN EmployeePosition EP on ETP.ETP_EPoId=EP.EPo_Id
 )
 INSERT INTO EmployeeToTeam(ETT_EmpId, ETT_ETeId)
 SELECT C.Emp_Id, ET.ETe_Id FROM CTE C JOIN EmployeeTeam ET on C.TeamName=ET.ETe_TeamName
-
+GO
 
 
 --EmployeeSalary
@@ -341,7 +346,7 @@ DATEADD(DAY, ABS(CHECKSUM(NEWID()) % 360), '2016-01-01') as DateFrom,
 DATEADD(DAY, ABS(CHECKSUM(NEWID()) % 31), '2018-01-01') as DateTo FROM Employee 
  as E JOIN [dbo].[EmployeeToPosition] ETP ON E.Emp_Id=ETP.ETP_EmpId
 JOIN [dbo].[EmployeePosition] EP on ETP.ETP_EPoId=EP.EPo_Id
-
+GO
 
 -- podwyżka 15%
 INSERT INTO [dbo].[EmployeeSalary]
@@ -350,7 +355,7 @@ SELECT ESa_EmpId, ESa_Salary*1.15,
 ESa_DateTo,
 '9999-12-31'
  FROM EmployeeSalary
-
+GO
 
 INSERT INTO [ServiceOrderStatus]
 (SOS_Code, SOS_StatusName)
@@ -363,7 +368,7 @@ SELECT 'S30', 'Invoice' UNION ALL
 SELECT 'S31', 'Correcting invoice' UNION ALL
 SELECT 'S40', 'Order completed' UNION ALL
 SELECT 'S41', 'Order canceled'
-
+GO
 --Select * FROM [ServiceOrderStatus]
 
 
@@ -391,6 +396,7 @@ WHEN 'SEDAN'	 THEN 3000 END) +
 23.00 as MPr_VatRate,
 DATEADD(DAY, ABS(CHECKSUM(NEWID()) % 100), '2016-01-01') as MPr_DateStart, DATEADD(DAY, ABS(CHECKSUM(NEWID()) % 50), '2017-01-01') as MPr_DateEnd
 FROM Model M JOIN Brand B on M.Mod_BraId=B.Bra_Id
+GO
 
 -- podwyżka o 15%
 INSERT INTO ModelPrice
@@ -398,7 +404,7 @@ INSERT INTO ModelPrice
 Mpr_DateStart, Mpr_DateEnd)
 SELECT Mpr_ModId, MPr_NetValue*1.15, Mpr_VatRate,
 Mpr_DateEnd, '9999-12-31' From ModelPrice
-
+GO
 --select distinct mod_braid, Brand.Bra_Code from Model join Brand on Model.Mod_BraId=Brand.Bra_Id
 --select distinct Mod_VehicleType from Model
 
@@ -425,7 +431,7 @@ INSERT INTO [dbo].[EmployeePayout](EPa_EmpId, EPa_PayoutAmount, EPa_PayoutType, 
 SELECT ESA_EmpId, ESA_Salary, 'Salary' as EPa_PayoutType, DATEFROMPARTS(YEAR(DateOf), MONTH(DateOf), 1) as Epa_DateFrom, EOMONTH(DateOf) as EPa_Dateto FROM AllDates d
 JOIN EmployeeSalary ES on d.DateOf>=ES.ESa_DateFrom and d.DateOf<=ES.ESa_DateTo
 order by ESa_EmpId, DateOf
-
+GO
 
 --Services
 --SELECT * FROM [Services]
@@ -446,7 +452,7 @@ SELECT 'S02', 'Car History check+print', 50, 8 UNION ALL
 SELECT 'S03', 'Car import', 500, 8 UNION ALL
 SELECT 'S04', 'Fleet management A', 300, 8 UNION ALL
 SELECT 'S05', 'Fleet management B', 500, 8
-
+GO
 
 
 EXEC [dbo].AddRandomCarOrders 3000
@@ -462,11 +468,11 @@ SELECT TOP 2 PERCENT Ord_Id FROM Orders)
 UPDATE Orders Set Ord_SellPrice=Ord_SellPrice*0.95
 FROM Orders O WHERE Ord_Id in (
 SELECT TOP 5 PERCENT Ord_Id FROM Orders)
-
+GO
 
 
 EXEC [dbo].RandomServiceOrders 400
-
+GO
 
 
 
