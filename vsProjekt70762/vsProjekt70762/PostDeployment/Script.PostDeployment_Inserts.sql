@@ -498,3 +498,148 @@ Select * FROM [EmployeeSalary]
 Select * FROM [EmployeePayout]
 Select * FROM [EmployeeToPosition]
 */
+
+
+/* Denormalize scripts  Part F, G */
+
+IF EXISTS (SELECT * FROM sys.databases WHERE name = N'PROJEKT70762_DEN')
+    BEGIN
+	USE [master]
+	ALTER DATABASE [PROJEKT70762_DEN] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    END;
+GO
+IF EXISTS (SELECT * FROM sys.databases WHERE name = N'PROJEKT70762_DEN')
+    BEGIN
+		DROP DATABASE [PROJEKT70762_DEN]
+	END
+GO
+CREATE DATABASE [PROJEKT70762_DEN]
+GO
+
+USE	PROJEKT70762_DEN
+GO
+
+if exists (select * from sysobjects where name='DenCustomer' and xtype='U')
+    drop table DenCustomer
+select * INTO DenCustomer from PROJEKT70762..Customer WITH(NOLOCK)
+ALTER TABLE DenCustomer ADD CONSTRAINT PK_DCusId PRIMARY KEY (Cus_Id)
+
+if exists (select * from sysobjects where name='DenModel' and xtype='U')
+    drop table DenModel
+    
+select M.Mod_Id, M.Mod_Code, M.Mod_Name, M.Mod_VehicleType, M.Mod_EngineType, M.Mod_EngineDisplacement, M.Mod_EngineHorsePower, M.Mod_NumberOfDoors, M.Mod_AutomaticGearBox,
+B.Bra_Code as Mod_BrandCode, B.Bra_Name as Mod_BrandName, B.Bra_Origin as Mod_BrandOrigin
+Into DenModel
+from PROJEKT70762..Model M WITH(NOLOCK) Join PROJEKT70762..Brand B WITH(NOLOCK) on M.Mod_BraId=B.Bra_Id
+ALTER TABLE DenModel ADD CONSTRAINT PK_ModId PRIMARY KEY (Mod_Id)
+
+if exists (select * from sysobjects where name='DenModelPrice' and xtype='U')
+    drop table DenModelPrice
+select * INTO DenModelPrice from PROJEKT70762..ModelPrice WITH(NOLOCK)
+ALTER TABLE DenModelPrice ADD CONSTRAINT PK_MprId PRIMARY KEY (Mpr_Id)
+ALTER TABLE DenModelPrice ADD CONSTRAINT FK_MprId FOREIGN KEY (Mpr_ModId) REFERENCES DenModel(Mod_Id)
+
+if exists (select * from sysobjects where name='DenEmployee' and xtype='U')
+    drop table DenEmployee
+select E.Emp_Id, E.Emp_Login, E.Emp_FirstName, E.Emp_LastName, E.Emp_TelephoneNo, E.Emp_Email, E.Emp_PESEL,
+EP.EPo_PositionName as Emp_PositionName, ET.ETe_TeamName as Emp_TeamName
+Into DenEmployee
+from PROJEKT70762..Employee E WITH(NOLOCK) JOIN PROJEKT70762..EmployeeToPosition ETP WITH(NOLOCK) on E.Emp_Id=ETP.ETP_EmpId JOIN PROJEKT70762..EmployeePosition EP on ETP.ETP_EPoId=EP.EPo_Id
+JOIN PROJEKT70762..EmployeeToTeam ETT WITH(NOLOCK) on E.Emp_Id=ETT.ETT_EmpId JOIN PROJEKT70762..EmployeeTeam ET WITH(NOLOCK) on ETT.ETT_ETeId=ET.ETe_Id
+ALTER TABLE DenEmployee ADD CONSTRAINT PK_EmpId PRIMARY KEY (Emp_Id)
+
+
+if exists (select * from sysobjects where name='DenOrders' and xtype='U')
+    drop table DenOrders 
+SELECT * INTO  DenOrders FROM PROJEKT70762..Orders WITH(NOLOCK)
+--select * from PROJEKT70762..Orders
+ALTER TABLE DenOrders  ADD CONSTRAINT PK_DOrdID PRIMARY KEY (Ord_Id)
+ALTER TABLE DenOrders  ADD CONSTRAINT FK_CusID FOREIGN KEY (Ord_CusId) REFERENCES DenCustomer(Cus_Id)
+ALTER TABLE DenOrders  ADD CONSTRAINT FK_EmpID FOREIGN KEY (Ord_EmpId) REFERENCES DenEmployee(Emp_Id)
+ALTER TABLE DenOrders  ADD CONSTRAINT FK_ModID FOREIGN KEY (Ord_ModId) REFERENCES DenModel(Mod_Id)
+CREATE NONCLUSTERED INDEX IX_DOrdID on DenOrders(Ord_Id)
+CREATE NONCLUSTERED INDEX IX_DCusId on DenOrders(Ord_CusId)
+CREATE NONCLUSTERED INDEX IX_DEmpID on DenOrders(Ord_EmpId)
+CREATE NONCLUSTERED INDEX IX_DModId on DenOrders(Ord_ModId)
+
+ CREATE NONCLUSTERED COLUMNSTORE INDEX [IDXCS_Orders_ColumnStore]
+ ON [DenOrders]
+ (Ord_SellPrice, Ord_ModId, Ord_CusId)
+
+
+ GO
+ CREATE SCHEMA [rapAn]
+
+ GO
+ CREATE FUNCTION dbo.rap_fnBrandsSoldByQuaterMonth(@year int) -- for 2017
+ RETURNS TABLE 
+ AS
+ RETURN
+ (
+ SELECT  Year(Ord_OrderDate) as [Year], DatePart(q,Ord_Orderdate) as Quater, DatePart(m,Ord_Orderdate) as [Month], M.Mod_BrandName, COUNT(*) as CarsSold from DenOrders O WITH(NOLOCK) JOIN DenModel M WITH(NOLOCK) on O.Ord_ModId=M.Mod_Id
+ WHERE O.Ord_OrderDate>=DATEFROMPARTS(@year,1,1) and O.Ord_OrderDate<=DATEFROMPARTS(@year,12,31)
+ --GROUP BY M.Mod_BrandName, M.Mod_BrandOrigin,  M.Mod_Name WITH ROLLUP
+ GROUP BY CUBE(M.Mod_BrandName, Year(Ord_OrderDate), DatePart(q,Ord_Orderdate), DatePart(m,Ord_Orderdate) )
+ )
+
+ GO
+ select * from [dbo].rap_fnBrandsSoldByQuaterMonth(2017)
+ 
+ GO
+ CREATE PROCEDURE dbo.rap_spCarsSoldQuaterByQuater @year int
+ AS
+ BEGIN
+  SELECT  Year(Ord_OrderDate) as [Year], DatePart(q,Ord_Orderdate) as Quater, COUNT(*) as CarsSold,
+ ISNULL(LAG(count(Ord_Id),1) OVER (ORDER BY Year(Ord_OrderDate), DatePart(q,Ord_Orderdate)) , 0)as PreviousQuater,
+ ISNULL(COUNT(*)-LAG(count(Ord_Id),1) OVER (ORDER BY Year(Ord_OrderDate), DatePart(q,Ord_Orderdate)), 0) as [QuaterDelta]
+ from DenOrders O WITH(NOLOCK) JOIN DenModel M WITH(NOLOCK) on O.Ord_ModId=M.Mod_Id
+ WHERE O.Ord_OrderDate>=DATEFROMPARTS(@year,1,1) and O.Ord_OrderDate<=DATEFROMPARTS(@year,12,31)
+ --GROUP BY M.Mod_BrandName, M.Mod_BrandOrigin,  M.Mod_Name WITH ROLLUP
+ GROUP BY Year(Ord_OrderDate), DatePart(q,Ord_Orderdate)--, Ord_OrderDate
+ --GROUP BY CUBE(Year(Ord_OrderDate), DatePart(q,Ord_Orderdate), DatePart(m,Ord_Orderdate), LAG(SUM(Count(Ord_Id)),1) OVER ( ORDER BY Ord_OrderDate))--PARTITION BY Year(Ord_OrderDate), DatePart(q,Ord_Orderdate), DatePart(m,Ord_Orderdate) )
+END
+GO
+EXEC [dbo].[rap_spCarsSoldQuaterByQuater] 2017
+
+
+GO
+ CREATE PROCEDURE dbo.rap_spOrdersPagination @year int, @offset int, @noOfRows int
+ AS
+ BEGIN
+  SELECT  Year(Ord_OrderDate) as [Year], Ord_Code, rtrim(ISNULL(E.Emp_FirstName,'') + ' ' +ISNULL(E.Emp_LastName,'')) as SoldBy
+ from DenOrders O WITH(NOLOCK) JOIN DenModel M WITH(NOLOCK) on O.Ord_ModId=M.Mod_Id
+ JOIN DenEmployee E WITH(NOLOCK) on O.Ord_EmpId=E.Emp_Id
+ WHERE O.Ord_OrderDate>=DATEFROMPARTS(@year,1,1) and O.Ord_OrderDate<=DATEFROMPARTS(@year,12,31)
+ORDER BY Ord_Id
+OFFSET @offset ROWS 
+FETCH NEXT @noOfRows ROWS ONLY
+END
+GO
+
+EXEC [dbo].[rap_spOrdersPagination] 2017, 100, 300
+
+ GO
+ CREATE VIEW dbo.rap_vTopSoldModelByPerson
+ AS
+  WITH CTE(EmpName, ModelCode, SoldCount, [Rank])
+ AS(
+ SELECT CONCAT(E.Emp_FirstName, ' ', E.Emp_LastName) as EmpName, M.Mod_Code as ModelCode, COUNT(*) as SoldCount,
+ ROW_NUMBER() OVER (PARTITION BY CONCAT(E.Emp_FirstName, ' ', E.Emp_LastName) ORDER BY COUNT(*) DESC) as [Rank]
+  FROM DenOrders O WITH(NOLOCK) JOIN DenEmployee E WITH(NOLOCK) on O.Ord_EmpId=E.Emp_Id
+ JOIN DenModel M WITH(NOLOCK) on O.Ord_ModId=M.Mod_Id 
+ GROUP BY M.Mod_Code, CONCAT(E.Emp_FirstName, ' ', E.Emp_LastName)
+ )
+ SELECT EmpName, ModelCode, SUM(SoldCount) as SoldCount FROM CTE
+ WHERE [Rank]=1
+ GROUP BY EmpName, ModelCode
+-- ORDER BY SoldCount DESC
+
+GO
+SELECT * FROM dbo.rap_vTopSoldModelByPerson ORDER BY SoldCount DESC
+
+
+
+
+select * from DenOrders WITH(NOLOCK)
+select * from DenEmployee WITH(NOLOCK)
+select * from DenModel WITH(NOLOCK)
